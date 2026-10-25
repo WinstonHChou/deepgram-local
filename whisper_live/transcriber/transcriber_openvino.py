@@ -26,13 +26,20 @@ class WhisperOpenVINO(object):
     def transcribe(self, input_audio, initial_prompt=None, hotwords=None):
         # Passed per call (not stored on the instance) so clients sharing one
         # transcriber under single_model=True each get their own options.
+        generate_kwargs = {
+            "return_timestamps": True,
+            "task": self.task,
+        }
+        if self.language is not None:
+            generate_kwargs["language"] = self.language
+        if initial_prompt and initial_prompt.strip():
+            generate_kwargs["initial_prompt"] = initial_prompt
+        if hotwords and hotwords.strip():
+            generate_kwargs["hotwords"] = hotwords
+
         outputs = self.model.generate(
             input_audio,
-            return_timestamps=True,
-            language=self.language,
-            task=self.task,
-            initial_prompt=initial_prompt,
-            hotwords=hotwords,
+            **generate_kwargs,
         )
         outputs = [seg for seg in outputs.chunks]
         return outputs

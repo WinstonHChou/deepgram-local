@@ -71,7 +71,9 @@ class ServeClientOpenVINO(ServeClientBase):
 
         core = Core()
         available_devices = core.available_devices
-        if 'GPU' in available_devices:
+        if 'NPU' in available_devices:
+            selected_device = 'NPU'
+        elif 'GPU' in available_devices:
             selected_device = 'GPU'
         else:
             gpu_devices = [d for d in available_devices if d.startswith('GPU')]
